@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/said-saifi/users-mvc/utils/errors"
 
@@ -30,7 +31,18 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-
+	id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		restErr := errors.NewBadRequestError("user id should be an integer")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	user, restErr := services.GetUser(id)
+	if err != nil {
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 func SearchUser(c *gin.Context) {
